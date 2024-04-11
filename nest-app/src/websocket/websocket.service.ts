@@ -22,10 +22,14 @@ export class WebsocketService
   handleConnection(client: any, ...args: any[]): any {
     console.log('Client connected:', client.id);
     console.log('Client args:', args);
-    client.emit('message', 'Hello from NestJS backend!');
+    client.emit('nestMessage', 'Hello from NestJS backend!');
   }
 
   handleDisconnect(client: any): any {
     console.log('Client disconnected:', client.id);
+  }
+
+  emitMessage(event: string, message: string) {
+    this.server.emit(event, message);
   }
 }

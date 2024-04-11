@@ -1,9 +1,12 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { redpanda, redpandaTopic } from './redpanda.admin';
+import { WebsocketService } from '../websocket/websocket.service';
 
 @Injectable()
 export class RedpandaConsumer implements OnModuleInit, OnModuleDestroy {
+  constructor(private readonly webSocketService: WebsocketService) {}
+
   private readonly consumer = redpanda.consumer({ groupId: uuidv4() });
 
   async onModuleInit() {
@@ -35,6 +38,10 @@ export class RedpandaConsumer implements OnModuleInit, OnModuleDestroy {
           timestamp: timestamp?.toString(),
           value: value?.toString(),
         });
+        this.webSocketService.emitMessage(
+          'nestRedPandaMessage',
+          value?.toString(),
+        );
       },
     });
   }

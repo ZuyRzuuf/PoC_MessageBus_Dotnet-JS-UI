@@ -5,29 +5,49 @@ function App() {
   const [nestjsMessages, setNestjsMessages] = useState([]);
   const [nodejsMessages, setNodejsMessages] = useState([]);
 
+  // useEffect(() => {
+  //   const socket = io('http://localhost:8082');
+  //
+  //   socket.on('message', (message) => {
+  //     setNestjsMessages((prevMessages) => [...prevMessages, message]);
+  //   });
+  //
+  //   return () => {
+  //     socket.off('message');
+  //     socket.disconnect();
+  //   };
+  // }, []);
+  //
   useEffect(() => {
-    const socket = io('http://localhost:8082');
+    const nestSocket = io('http://localhost:8082');
+    const nodeSocket = io('http://localhost:8083');
 
-    socket.on('message', (message) => {
+    nestSocket.on('nestMessage', (message) => {
       setNestjsMessages((prevMessages) => [...prevMessages, message]);
     });
-
-    return () => {
-      socket.off('message');
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const socket = io('http://localhost:8083');
-
-    socket.on('message', (message) => {
+    nestSocket.on('nestRedPandaMessage', (message) => {
+      setNestjsMessages((prevMessages) => [...prevMessages, message]);
+    });
+    nestSocket.on('nestKafkaMessage', (message) => {
+      setNestjsMessages((prevMessages) => [...prevMessages, message]);
+    });
+    nodeSocket.on('nodeMessage', (message) => {
+      setNodejsMessages((prevMessages) => [...prevMessages, message]);
+    });
+    nodeSocket.on('nodeRedPandaMessage', (message) => {
+      setNodejsMessages((prevMessages) => [...prevMessages, message]);
+    });
+    nodeSocket.on('nodeKafkaMessage', (message) => {
       setNodejsMessages((prevMessages) => [...prevMessages, message]);
     });
 
     return () => {
-      socket.off('message');
-      socket.disconnect();
+      nestSocket.off('nodeRedPandaMessage');
+      nestSocket.off('nodeKafkaMessage');
+      nestSocket.disconnect();
+      nodeSocket.off('nodeRedPandaMessage');
+      nodeSocket.off('nodeKafkaMessage');
+      nodeSocket.disconnect();
     };
   }, []);
 

@@ -1,8 +1,9 @@
 import { kafka } from "./admin";
+import { Server } from "socket.io";
 
 const consumer = kafka.consumer({ groupId: 'test-group' })
 
-export const connectConsumer = async (topic: string) => {
+export const connectConsumer = async (topic: string, io: Server) => {
     try {
         await consumer.connect()
         await consumer.subscribe({ topic: topic, fromBeginning: true })
@@ -13,6 +14,7 @@ export const connectConsumer = async (topic: string) => {
                     timestamp: timestamp?.toString(),
                     value: value?.toString(),
                 })
+                io.emit('nodeKafkaMessage', value?.toString())
             },
         })
     } catch (error) {

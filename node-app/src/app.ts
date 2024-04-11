@@ -25,8 +25,8 @@ app.use(express.urlencoded({extended : true}))
 
 const topic = "test-topic";
 
-connectKafkaConsumer(topic).then(() => console.log('Kafka consumer setup complete.'));
-connectRedPandaConsumer(topic).then(() => console.log('RedPanda consumer setup complete.'));
+connectKafkaConsumer(topic, io).then(() => console.log('Kafka consumer setup complete.'));
+connectRedPandaConsumer(topic, io).then(() => console.log('RedPanda consumer setup complete.'));
 
 app.get('/kafka', async (req, res) => {
     await createKafkaTopic(topic, 1, 1);
@@ -59,7 +59,7 @@ app.listen(PORT, () => {
 io.on('connection', (socket) => {
     console.log('New client connected');
 
-    socket.emit('message', 'Hello from NodeApp backend!');
+    socket.emit('nodeMessage', 'Hello from NodeApp backend!');
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');
