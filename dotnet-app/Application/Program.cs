@@ -1,12 +1,17 @@
 using Application;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MessengerOptions>(builder.Configuration.GetSection("MessagingSystem"));
+builder.Services.Configure<ConsumerOptions>("Kafka", builder.Configuration.GetSection("MessagingSystem:Kafka"));
+builder.Services.Configure<ConsumerOptions>("RedPanda", builder.Configuration.GetSection("MessagingSystem:RedPanda"));
 
 // Add services to the container.
 builder.Services.AddSingleton<IMessageProducerFactory, MessageProducerFactory>();
+builder.Services.AddHostedService<KafkaConsumerService>();
+builder.Services.AddHostedService<RedPandaConsumerService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
